@@ -1,0 +1,96 @@
+<input id="tagging-field" name="tagging-field"  />
+<div id="tags">
+    <p  id="tag" onclick="tagClicked(this)">
+
+    </p>
+</div>
+
+<p><b> Tagged elements</b></p>
+<div id="tagged-items">
+
+</div>
+
+<script type="text/javascript">
+    var element = document.getElementById("tagging-field");
+    var preDefinedTags = ['Peter', 'Parker', 'Wade', 'Wilson', 'Bruce', 'Wayne'];
+    var startTag = false;
+    var tagWord = '';
+    var tags = document.getElementById('tags');
+    var tagElement = document.getElementById('tag');
+    var taggedWords = [];
+    var taggedItemsDiv = document.getElementById('tagged-items');
+    
+    element.addEventListener("textInput", function(event) {
+        console.log(event);
+        processCharacter(event.data);
+    });
+    element.addEventListener("keyup", function(event) {
+        console.log(event);
+        if(event.key == 'Backspace') {
+            tagWord = tagWord.substr(0, tagWord.length-1);
+            if(startTag) {
+                displayTags(tagWord);
+            }
+        }
+    });
+    function processCharacter(character) {
+        // var character = event.data;
+        if(character == '@')
+        {
+            startTag = true;
+            console.log('@ pressed');
+            displayTags('');
+        }
+        if(character == ' ')
+        {
+            startTag = false;
+            tagWord = '';
+            removeTags();
+            console.log('stop showing tag');
+        }
+        if(startTag && character != '@') {
+            //create a new element            
+            tagWord+=character;
+            displayTags(tagWord);
+        }
+    }
+
+    function displayTags(word) {
+        tags.innerHTML = '';
+        console.log(word);
+        if(tagWord.length > 0) {
+            for(var index in preDefinedTags)
+            {
+                if(preDefinedTags[index].toLowerCase().indexOf(word.toLowerCase()) >=0 )
+                {
+                    var newTag = tagElement.cloneNode(true);
+                    // var newTag = document.createElement('p');
+                    newTag.innerText = preDefinedTags[index];
+                    tags.appendChild(newTag);
+                }
+            }
+        }
+    }
+    function removeTags() {
+        tags.innerHTML = '';
+        startTag = false;
+
+    }
+
+    function tagClicked(tagElement) {
+        console.log(tagElement.innerText);
+        var selectedTagListItem = document.createElement('li');
+        var textnode=document.createTextNode(tagElement.innerText);
+        selectedTagListItem.appendChild(textnode);
+        taggedItemsDiv.appendChild(selectedTagListItem);
+        
+        var inputText = element.value;
+        tagIndex = inputText.indexOf('@');
+        inputText = inputText.substring(0, tagIndex);
+        inputText += tagElement.innerText;
+        element.value = inputText;
+        tagWord = '';
+        removeTags();
+    }
+    
+ </script>
